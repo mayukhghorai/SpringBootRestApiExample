@@ -1,0 +1,81 @@
+group 'com.websystique.springboot'
+version '1.0.0'
+
+apply plugin: 'java'
+apply plugin: 'maven-publish'
+apply plugin: 'application'
+
+sourceCompatibility = 1.8
+
+
+task sourceJar(type: War) {
+    from sourceSets.main.allJava
+    classifier "sources"
+}
+
+publishing {
+    repositories {
+        maven {
+            if (project.version.endsWith('-SNAPSHOT')) {
+                url "http://nexus:8081/repository/maven-snapshots"
+            } else {
+                url "http://nexus:8081/repository/maven-releases"
+            }
+            credentials {
+                username = 'developer'
+                password = 'Mcx@123'
+            }
+        }
+    }
+
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+
+    publications {
+        mavenJava(MavenPublication) {
+            artifact sourceJar
+        }
+    }
+}
+
+repositories {
+    maven{
+        url "http://nexus:8081/repository/maven-public"
+    }
+}
+
+configurations.all {
+    // Check for updates every build
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
+mainClassName = 'com.websystique.springboot.SpringBootRestApiApp'
+
+
+
+
+dependencies {
+//    compile('com.mcx.iris:iris-dictionary:1.0-SNAPSHOT') {
+//        exclude group: 'org.hibernate'
+//    }
+
+//    compile 'commons-dbcp:commons-dbcp:1.4'
+//    compile "com.fasterxml.jackson.core:jackson-databind:2.5.2"
+//    compile 'org.springframework:spring-orm:4.0.3.RELEASE'
+//    compile 'org.springframework:spring-jdbc:3.2.2.RELEASE'
+    compile 'org.springframework.boot:spring-boot-starter-parent:1.4.3.RELEASE'
+    compile 'org.springframework.boot:spring-boot-starter-web:1.4.3.RELEASE'
+    compile 'org.springframework.boot:spring-boot-starter-test:1.4.3.RELEASE'
+    compile 'org.springframework.boot:spring-boot-starter-data-jpa:1.4.3.RELEASE'
+
+    compile "mysql:mysql-connector-java:5.1.31"
+
+//    testCompile "junit:junit:4.12"
+
+//    runtime files('config')
+}
+
+publish.dependsOn(build)
